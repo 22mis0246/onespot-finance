@@ -1,326 +1,298 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
+import { useState, useEffect } from "react";
+import DashboardLayout from "../layouts/DashboardLayout";
+import api from "../services/api";
 
 interface Liability {
-  id: number;
+  id?: number;
   title: string;
   type: string;
   totalAmount: number;
   outstanding: number;
   interestRate: number;
-  createdAt: string;
+  dueDate: number;
+  createdAt?: string;
 }
 
 export default function Liabilities() {
   const [liabilities, setLiabilities] = useState<Liability[]>([]);
   const [showModal, setShowModal] = useState(false);
+  const [editingLiability, setEditingLiability] =
+    useState<Liability | null>(null);
 
   const [form, setForm] = useState({
     title: "",
-    type: "Personal Loan",
+    type: "Home Loan",
     totalAmount: "",
     interestRate: "",
+    dueDate: "", 
   });
-
-  const token = localStorage.getItem("token");
-
-  const fetchLiabilities = async () => {
-    const res = await axios.get("http://localhost:4000/api/liabilities", {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    setLiabilities(res.data);
-  };
 
   useEffect(() => {
     fetchLiabilities();
   }, []);
 
-  const handleAdd = async () => {
-    await axios.post(
-      "http://localhost:4000/api/liabilities",
-      {
-        title: form.title,
-        type: form.type,
-        totalAmount: Number(form.totalAmount),
-        outstanding: Number(form.totalAmount),
-        interestRate: Number(form.interestRate),
-      },
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
-
-    setShowModal(false);
-    setForm({
-      title: "",
-      type: "Personal Loan",
-      totalAmount: "",
-      interestRate: "",
-    });
-
-    fetchLiabilities();
+  const fetchLiabilities = async () => {
+    const res = await api.get("/api/liabilities");
+    setLiabilities(res.data);
   };
 
-  const handleDelete = async (id: number) => {
-    await axios.delete(`http://localhost:4000/api/liabilities/${id}`, {
-      headers: { Authorization: `Bearer ${token}` },
+  /* =========================
+     Save / Update
+  ========================= */
+  const saveLiability = async () => {
+    if (!form.title || !form.totalAmount) {
+      alert("Fill all fields");
+      return;
+    }
+
+    const payload = {
+      title: form.title,
+      type: form.type,
+      totalAmount: Number(form.totalAmount),
+      outstanding: Number(form.totalAmount),
+      interestRate: Number(form.interestRate),
+      dueDate: form.dueDate ? new Date(form.dueDate) : null, 
+    };
+
+    if (editingLiability) {
+      await api.put(
+        `/api/liabilities/${editingLiability.id}`,
+        payload
+      );
+    } else {
+      await api.post("/api/liabilities", payload);
+    }
+
+    fetchLiabilities();
+    setShowModal(false);
+    setEditingLiability(null);
+    setForm({
+      title: "",
+      type: "Home Loan",
+      totalAmount: "",
+      interestRate: "",
+      dueDate:"",
     });
+  };
+
+  /* =========================
+     Delete
+  ========================= */
+  const deleteLiability = async (id?: number) => {
+    if (!id) return;
+    await api.delete(`/api/liabilities/${id}`);
     fetchLiabilities();
   };
 
   const totalOutstanding = liabilities.reduce(
-    (acc, l) => acc + l.outstanding,
+    (sum, l) => sum + l.outstanding,
     0
   );
 
   return (
-    <div style={styles.page}>
-      <h1 style={styles.heading}>Liabilities</h1>
+    <DashboardLayout>
+      <div className="p-8 text-white">
 
-      {/* SUMMARY CARD */}
-      <div style={styles.summaryRow}>
-        <div style={styles.summaryCard}>
-          <p style={styles.summaryLabel}>Total Outstanding</p>
-          <h2 style={styles.summaryAmount}>₹ {totalOutstanding}</h2>
+        <h1 className="text-3xl font-bold mb-6">Liabilities</h1>
+
+        {/* SUMMARY CARD */}
+        <div className="grid md:grid-cols-1 gap-6 mb-8">
+          <div className="bg-white/10 p-5 rounded-xl w-[250px]">
+            <p className="text-sm text-white/60">
+              Total Outstanding
+            </p>
+            <h2 className="text-xl font-bold text-red-400">
+              ₹ {totalOutstanding.toLocaleString("en-IN")}
+            </h2>
+          </div>
         </div>
-      </div>
 
-      <button style={styles.addBtn} onClick={() => setShowModal(true)}>
-        + Add Liability
-      </button>
+        <button
+          onClick={() => setShowModal(true)}
+          className="mb-6 px-6 py-3 bg-indigo-600 rounded-lg"
+        >
+          + Add Liability
+        </button>
 
-      {/* MODAL */}
-      {showModal && (
-        <div style={styles.modalOverlay}>
-          <div style={styles.modal}>
-            <h2 style={{ marginBottom: 20 }}>Add Liability</h2>
-
-            <input
-              style={styles.input}
-              placeholder="Title"
-              value={form.title}
-              onChange={(e) =>
-                setForm({ ...form, title: e.target.value })
-              }
-            />
-
-            <select
-              style={styles.input}
-              value={form.type}
-              onChange={(e) =>
-                setForm({ ...form, type: e.target.value })
-              }
+        {/* LIABILITY LIST */}
+        <div className="grid gap-4">
+          {liabilities.map((l) => (
+            <div
+              key={l.id}
+              className="bg-white/10 p-5 rounded-xl flex justify-between"
             >
-              <option>Personal Loan</option>
-              <option>Home Loan</option>
-              <option>Vehicle Loan</option>
-              <option>Credit Card</option>
-              <option>Education Loan</option>
-            </select>
+              <div>
+                <h3 className="font-semibold">{l.title}</h3>
+                <p className="text-sm text-white/60">
+                  {l.type}
+                </p>
+                <p className="text-sm text-white/60">
+                  Interest: {l.interestRate}%
+                </p>
+              </div>
 
-            <input
-              style={styles.input}
-              type="number"
-              placeholder="Total Amount"
-              value={form.totalAmount}
-              onChange={(e) =>
-                setForm({ ...form, totalAmount: e.target.value })
-              }
-            />
+              <div className="text-right">
+                <p className="font-semibold text-red-400">
+                  ₹ {l.outstanding.toLocaleString("en-IN")}
+                </p>
+                 {l.dueDate && (
+    <p className="text-sm text-teal-400 mt-1">
+      Due: {new Date(l.dueDate).toLocaleDateString("en-IN")}
+    </p>
+  )}
 
-            <input
-              style={styles.input}
-              type="number"
-              placeholder="Interest Rate %"
-              value={form.interestRate}
-              onChange={(e) =>
-                setForm({ ...form, interestRate: e.target.value })
-              }
-            />
+                <div className="flex gap-4 mt-2 justify-end">
+                  <button
+                    onClick={() => {
+                      setEditingLiability(l);
+                      setForm({
+                        title: l.title,
+                        type: l.type,
+                        totalAmount:
+                          l.totalAmount.toString(),
+                        interestRate:
+                          l.interestRate.toString(),
+                           dueDate: l.dueDate
+    ? new Date(l.dueDate).toISOString().split("T")[0]
+    : "",
+                      });
+                      setShowModal(true);
+                    }}
+                    className="text-yellow-400 text-sm"
+                  >
+                    Edit
+                  </button>
 
-            <div style={styles.modalActions}>
-              <button
-                style={styles.cancelBtn}
-                onClick={() => setShowModal(false)}
+                  <button
+                    onClick={() =>
+                      deleteLiability(l.id)
+                    }
+                    className="text-red-400 text-sm"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* MODAL */}
+        {showModal && (
+          <div className="fixed inset-0 bg-black/60 flex items-center justify-center">
+            <div className="bg-slate-900 p-8 rounded-2xl w-[400px]">
+
+              <h2 className="text-xl font-bold mb-6">
+                {editingLiability
+                  ? "Edit"
+                  : "Add"}{" "}
+                Liability
+              </h2>
+
+              <input
+                type="text"
+                placeholder="Title"
+                className="w-full p-3 mb-4 bg-white/10 rounded-lg"
+                value={form.title}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    title: e.target.value,
+                  })
+                }
+              />
+
+              <select
+                className="w-full p-3 mb-4 bg-white/10 rounded-lg text-white"
+                value={form.type}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    type: e.target.value,
+                  })
+                }
               >
-                Cancel
-              </button>
+                {[
+                  "Home Loan",
+                  "Personal Loan",
+                  "Vehicle Loan",
+                  "Education Loan",
+                  "Credit Card",
+                ].map((type) => (
+                  <option
+                    key={type}
+                    value={type}
+                    className="bg-slate-900"
+                  >
+                    {type}
+                  </option>
+                ))}
+              </select>
 
-              <button style={styles.saveBtn} onClick={handleAdd}>
-                Add
-              </button>
+              <input
+                type="number"
+                placeholder="Total Amount"
+                className="w-full p-3 mb-4 bg-white/10 rounded-lg"
+                value={form.totalAmount}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    totalAmount: e.target.value,
+                  })
+                }
+              />
+
+              <input
+                type="number"
+                placeholder="Interest Rate %"
+                className="w-full p-3 mb-6 bg-white/10 rounded-lg"
+                value={form.interestRate}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    interestRate: e.target.value,
+                  })
+                }
+                
+              />
+              <input
+  type="date"
+  className="w-full p-3 mb-6 bg-white/10 rounded-lg text-white"
+  value={form.dueDate}
+  onChange={(e) =>
+    setForm({
+      ...form,
+      dueDate: e.target.value,
+    })
+  }
+/>
+
+
+              <div className="flex justify-between">
+                <button
+                  onClick={() => {
+                    setShowModal(false);
+                    setEditingLiability(null);
+                  }}
+                  className="px-5 py-2 bg-gray-600 rounded-lg"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  onClick={saveLiability}
+                  className="px-5 py-2 bg-indigo-600 rounded-lg"
+                >
+                  {editingLiability
+                    ? "Update"
+                    : "Add"}
+                </button>
+              </div>
+
             </div>
           </div>
-        </div>
-      )}
-
-      {/* LIABILITY CARDS */}
-      <div style={styles.grid}>
-        {liabilities.map((l) => (
-          <div key={l.id} style={styles.card}>
-            <h3 style={styles.cardTitle}>{l.title}</h3>
-            <p style={styles.cardType}>{l.type}</p>
-
-            <div style={styles.cardRow}>
-              <span>Total:</span>
-              <span>₹ {l.totalAmount}</span>
-            </div>
-
-            <div style={styles.cardRow}>
-              <span>Outstanding:</span>
-              <span style={{ color: "#ff6b6b" }}>
-                ₹ {l.outstanding}
-              </span>
-            </div>
-
-            <div style={styles.cardRow}>
-              <span>Interest:</span>
-              <span>{l.interestRate}%</span>
-            </div>
-
-            <button
-              style={styles.deleteBtn}
-              onClick={() => handleDelete(l.id)}
-            >
-              Delete
-            </button>
-          </div>
-        ))}
+        )}
       </div>
-    </div>
+    </DashboardLayout>
   );
 }
-
-/* ========================
-   STYLES (MATCHING  YOUR UI)
-======================== */
-
-const styles: any = {
-  page: {
-    padding: "40px",
-    color: "white",
-  },
-
-  heading: {
-    fontSize: "32px",
-    marginBottom: "30px",
-  },
-
-  summaryRow: {
-    display: "flex",
-    gap: "20px",
-    marginBottom: "20px",
-  },
-
-  summaryCard: {
-    background: "rgba(255,255,255,0.06)",
-    backdropFilter: "blur(10px)",
-    padding: "20px",
-    borderRadius: "16px",
-    minWidth: "260px",
-  },
-
-  summaryLabel: {
-    opacity: 0.7,
-  },
-
-  summaryAmount: {
-    marginTop: "8px",
-    color: "#ff6b6b",
-  },
-
-  addBtn: {
-    background: "#6c63ff",
-    color: "white",
-    border: "none",
-    padding: "12px 22px",
-    borderRadius: "12px",
-    cursor: "pointer",
-    marginBottom: "30px",
-  },
-
-  grid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-    gap: "20px",
-  },
-
-  card: {
-    background: "rgba(255,255,255,0.05)",
-    padding: "20px",
-    borderRadius: "18px",
-    backdropFilter: "blur(10px)",
-  },
-
-  cardTitle: {
-    fontSize: "18px",
-    marginBottom: "6px",
-  },
-
-  cardType: {
-    opacity: 0.6,
-    marginBottom: "15px",
-  },
-
-  cardRow: {
-    display: "flex",
-    justifyContent: "space-between",
-    marginBottom: "8px",
-  },
-
-  deleteBtn: {
-    marginTop: "12px",
-    background: "transparent",
-    color: "#ff6b6b",
-    border: "1px solid #ff6b6b",
-    padding: "6px 10px",
-    borderRadius: "8px",
-    cursor: "pointer",
-  },
-
-  modalOverlay: {
-    position: "fixed",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    background: "rgba(0,0,0,0.6)",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-
-  modal: {
-    background: "#1e1f3a",
-    padding: "30px",
-    borderRadius: "16px",
-    width: "400px",
-  },
-
-  input: {
-    width: "100%",
-    padding: "10px",
-    marginBottom: "15px",
-    borderRadius: "8px",
-    border: "none",
-  },
-
-  modalActions: {
-    display: "flex",
-    justifyContent: "space-between",
-  },
-
-  cancelBtn: {
-    background: "transparent",
-    color: "white",
-    border: "1px solid gray",
-    padding: "8px 14px",
-    borderRadius: "8px",
-  },
-
-  saveBtn: {
-    background: "#6c63ff",
-    color: "white",
-    border: "none",
-    padding: "8px 14px",
-    borderRadius: "8px",
-  },
-};
