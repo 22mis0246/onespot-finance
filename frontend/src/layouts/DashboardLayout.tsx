@@ -55,6 +55,13 @@ export default function DashboardLayout({ children }: Props) {
             >
               Liabilities
             </Link>
+            <Link
+  className="hover:text-indigo-400 transition"
+  to="/goals"
+>
+  Goals
+</Link>
+
 
           </nav>
         </div>

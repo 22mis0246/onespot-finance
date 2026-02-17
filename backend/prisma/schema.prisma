@@ -16,6 +16,7 @@ model User {
   expenses    Expense[]
   investments Investment[]
   liabilities Liability[]
+  goals Goal[]
 
 }
 
@@ -61,4 +62,22 @@ model Liability {
   createdAt    DateTime @default(now())
 
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+///////////////////////////////////////////////////////
+// GOAL MODEL
+///////////////////////////////////////////////////////
+
+model Goal {
+  id          Int      @id @default(autoincrement())
+  title       String
+  type        String   // short-term | long-term
+  targetAmount Float
+  savedAmount  Float   @default(0)
+
+  targetDate   DateTime?
+  userId       Int
+
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt    DateTime  @default(now())
 }

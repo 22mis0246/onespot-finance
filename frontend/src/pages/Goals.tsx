@@ -3,14 +3,14 @@ import DashboardLayout from "../layouts/DashboardLayout";
 import api from "../services/api";
 
 /* =========================
-   Goal Interface
+   Goal Interface (MATCHES PRISMA)
 ========================= */
 interface Goal {
   id?: number;
   title: string;
-  category: "short" | "long";
+  type: "short" | "long";
   targetAmount: number;
-  currentAmount: number;
+  savedAmount: number;
   targetDate: string;
   createdAt?: string;
 }
@@ -23,88 +23,110 @@ export default function Goals() {
 
   const [form, setForm] = useState({
     title: "",
-    category: "short",
+    type: "short",
     targetAmount: "",
-    currentAmount: "",
+    savedAmount: "",
     targetDate: "",
   });
 
   /* =========================
-     Fetch Goals
+     FETCH GOALS
   ========================= */
   useEffect(() => {
     fetchGoals();
   }, []);
 
   const fetchGoals = async () => {
-    const res = await api.get("/api/goals");
-    setGoals(res.data);
+    try {
+      const res = await api.get("/api/goals");
+      setGoals(res.data);
+    } catch (err) {
+      console.error("Fetch goals error:", err);
+    }
   };
 
   /* =========================
-     Save / Update Goal
+     SAVE / UPDATE GOAL
   ========================= */
   const saveGoal = async () => {
-    if (!form.title || !form.targetAmount || !form.targetDate) {
-      alert("Please fill required fields");
+    if (!form.title || !form.targetAmount) {
+      alert("Fill required fields");
       return;
     }
 
     const payload = {
       title: form.title,
-      category: form.category,
+      type: form.type,
       targetAmount: Number(form.targetAmount),
-      currentAmount: Number(form.currentAmount || 0),
-      targetDate: form.targetDate,
+      savedAmount: Number(form.savedAmount || 0),
+      targetDate: form.targetDate
+        ? new Date(form.targetDate).toISOString()
+        : null,
     };
 
-    if (editingGoal) {
-      await api.put(`/api/goals/${editingGoal.id}`, payload);
-    } else {
-      await api.post("/api/goals", payload);
-    }
+    try {
+      if (editingGoal) {
+        await api.put(`/api/goals/${editingGoal.id}`, payload);
+      } else {
+        await api.post("/api/goals", payload);
+      }
 
-    fetchGoals();
-    setShowModal(false);
-    setEditingGoal(null);
-    setForm({
-      title: "",
-      category: "short",
-      targetAmount: "",
-      currentAmount: "",
-      targetDate: "",
-    });
+      fetchGoals();
+      setShowModal(false);
+      setEditingGoal(null);
+      setForm({
+        title: "",
+        type: "short",
+        targetAmount: "",
+        savedAmount: "",
+        targetDate: "",
+      });
+
+    } catch (err) {
+      console.error("Save goal error:", err);
+    }
   };
 
   /* =========================
-     Delete Goal
+     DELETE
   ========================= */
   const deleteGoal = async (id?: number) => {
     if (!id) return;
-    await api.delete(`/api/goals/${id}`);
-    fetchGoals();
+
+    try {
+      await api.delete(`/api/goals/${id}`);
+      fetchGoals();
+    } catch (err) {
+      console.error("Delete goal error:", err);
+    }
   };
 
   /* =========================
-     Calculations
+     CALCULATIONS
   ========================= */
-  const totalTarget = goals.reduce((sum, g) => sum + g.targetAmount, 0);
-  const totalSaved = goals.reduce((sum, g) => sum + g.currentAmount, 0);
+  const totalTarget = goals.reduce(
+    (sum, g) => sum + g.targetAmount,
+    0
+  );
+
+  const totalSaved = goals.reduce(
+    (sum, g) => sum + g.savedAmount,
+    0
+  );
 
   const overallProgress =
-    totalTarget > 0 ? (totalSaved / totalTarget) * 100 : 0;
+    totalTarget > 0
+      ? (totalSaved / totalTarget) * 100
+      : 0;
 
-  const now = new Date();
+  const shortGoals = goals.filter(
+    (g) => g.type === "short"
+  );
 
-  /* =========================
-     Split Goals
-  ========================= */
-  const shortGoals = goals.filter((g) => g.category === "short");
-  const longGoals = goals.filter((g) => g.category === "long");
+  const longGoals = goals.filter(
+    (g) => g.type === "long"
+  );
 
-  /* =========================
-     Helper Functions
-  ========================= */
   const getProgressColor = (progress: number) => {
     if (progress < 40) return "bg-red-500";
     if (progress < 75) return "bg-yellow-400";
@@ -112,52 +134,54 @@ export default function Goals() {
   };
 
   const getDaysRemaining = (date: string) => {
+    const now = new Date();
     const target = new Date(date);
     const diff = target.getTime() - now.getTime();
     return Math.ceil(diff / (1000 * 60 * 60 * 24));
-  };
-
-  const getMonthlyRequired = (goal: Goal) => {
-    const daysLeft = getDaysRemaining(goal.targetDate);
-    if (daysLeft <= 0) return 0;
-
-    const monthsLeft = daysLeft / 30;
-    const remaining = goal.targetAmount - goal.currentAmount;
-    return remaining > 0 ? remaining / monthsLeft : 0;
   };
 
   return (
     <DashboardLayout>
       <div className="p-8 text-white">
 
-        <h1 className="text-3xl font-bold mb-6">Goals</h1>
+        <h1 className="text-3xl font-bold mb-6">
+          Goals
+        </h1>
 
         {/* SUMMARY CARDS */}
         <div className="grid md:grid-cols-4 gap-6 mb-8">
 
           <div className="bg-white/10 p-5 rounded-xl">
-            <p className="text-sm text-white/60">Total Target</p>
+            <p className="text-sm text-white/60">
+              Total Target
+            </p>
             <h2 className="text-xl font-bold text-indigo-400">
               ₹ {totalTarget.toLocaleString("en-IN")}
             </h2>
           </div>
 
           <div className="bg-white/10 p-5 rounded-xl">
-            <p className="text-sm text-white/60">Total Saved</p>
+            <p className="text-sm text-white/60">
+              Total Saved
+            </p>
             <h2 className="text-xl font-bold text-green-400">
               ₹ {totalSaved.toLocaleString("en-IN")}
             </h2>
           </div>
 
           <div className="bg-white/10 p-5 rounded-xl">
-            <p className="text-sm text-white/60">Overall Progress</p>
+            <p className="text-sm text-white/60">
+              Overall Progress
+            </p>
             <h2 className="text-xl font-bold">
               {overallProgress.toFixed(1)}%
             </h2>
           </div>
 
           <div className="bg-white/10 p-5 rounded-xl">
-            <p className="text-sm text-white/60">Active Goals</p>
+            <p className="text-sm text-white/60">
+              Active Goals
+            </p>
             <h2 className="text-xl font-bold">
               {goals.length}
             </h2>
@@ -174,96 +198,110 @@ export default function Goals() {
 
         {/* GOAL SECTIONS */}
         {[{ title: "Short Term Goals", data: shortGoals },
-          { title: "Long Term Goals", data: longGoals }].map(section => (
+          { title: "Long Term Goals", data: longGoals }]
+          .map(section => (
+
           <div key={section.title} className="mb-10">
+
             <h2 className="text-xl font-semibold mb-4">
               {section.title}
             </h2>
 
             <div className="grid gap-5">
+
               {section.data.map(goal => {
 
                 const progress =
-                  (goal.currentAmount / goal.targetAmount) * 100;
+                  (goal.savedAmount /
+                    goal.targetAmount) * 100;
 
                 const daysLeft =
-                  getDaysRemaining(goal.targetDate);
-
-                const monthlyRequired =
-                  getMonthlyRequired(goal);
+                  goal.targetDate
+                    ? getDaysRemaining(goal.targetDate)
+                    : null;
 
                 return (
+
                   <div
                     key={goal.id}
                     className="bg-white/10 p-6 rounded-xl"
                   >
 
                     <div className="flex justify-between mb-3">
+
                       <div>
                         <h3 className="text-lg font-semibold">
                           {goal.title}
                         </h3>
-                        <p className="text-sm text-white/60">
-                          Target Date:{" "}
-                          {new Date(
-                            goal.targetDate
-                          ).toLocaleDateString("en-IN")}
-                        </p>
+
+                        {goal.targetDate && (
+                          <p className="text-sm text-white/60">
+                            Target:{" "}
+                            {new Date(
+                              goal.targetDate
+                            ).toLocaleDateString("en-IN")}
+                          </p>
+                        )}
                       </div>
 
                       <div className="text-right">
                         <p className="text-green-400">
-                          ₹ {goal.currentAmount.toLocaleString("en-IN")}
+                          ₹ {goal.savedAmount.toLocaleString("en-IN")}
                         </p>
                         <p className="text-white/60 text-sm">
-                          of ₹{" "}
-                          {goal.targetAmount.toLocaleString("en-IN")}
+                          of ₹ {goal.targetAmount.toLocaleString("en-IN")}
                         </p>
                       </div>
+
                     </div>
 
-                    {/* Progress Bar */}
+                    {/* PROGRESS BAR */}
                     <div className="w-full bg-white/20 rounded-full h-3 mb-3">
                       <div
                         className={`${getProgressColor(progress)} h-3 rounded-full`}
-                        style={{ width: `${progress}%` }}
-                      ></div>
+                        style={{
+                          width: `${progress}%`,
+                        }}
+                      />
                     </div>
 
-                    {/* Extra Metrics */}
-                    <div className="grid md:grid-cols-3 gap-4 text-sm text-white/70">
+                    {/* EXTRA INFO */}
+                    <div className="flex justify-between text-sm text-white/70">
 
                       <div>
                         Remaining: ₹{" "}
                         {(goal.targetAmount -
-                          goal.currentAmount
-                        ).toLocaleString("en-IN")}
+                          goal.savedAmount)
+                          .toLocaleString("en-IN")}
                       </div>
 
-                      <div>
-                        Days Left: {daysLeft > 0 ? daysLeft : "Overdue"}
-                      </div>
-
-                      <div>
-                        Monthly Required: ₹{" "}
-                        {monthlyRequired.toLocaleString("en-IN")}
-                      </div>
+                      {daysLeft !== null && (
+                        <div>
+                          Days Left:{" "}
+                          {daysLeft > 0
+                            ? daysLeft
+                            : "Overdue"}
+                        </div>
+                      )}
 
                     </div>
 
+                    {/* ACTIONS */}
                     <div className="flex gap-4 mt-4">
                       <button
                         onClick={() => {
                           setEditingGoal(goal);
                           setForm({
                             title: goal.title,
-                            category: goal.category,
+                            type: goal.type,
                             targetAmount:
                               goal.targetAmount.toString(),
-                            currentAmount:
-                              goal.currentAmount.toString(),
+                            savedAmount:
+                              goal.savedAmount.toString(),
                             targetDate:
-                              goal.targetDate.split("T")[0],
+                              goal.targetDate
+                                ? goal.targetDate.split("T")[0]
+                                : "",
                           });
                           setShowModal(true);
                         }}
@@ -283,15 +321,20 @@ export default function Goals() {
                     </div>
 
                   </div>
+
                 );
               })}
+
             </div>
+
           </div>
+
         ))}
 
         {/* MODAL */}
         {showModal && (
           <div className="fixed inset-0 bg-black/60 flex items-center justify-center">
+
             <div className="bg-slate-900 p-8 rounded-2xl w-[400px]">
 
               <h2 className="text-xl font-bold mb-6">
@@ -313,19 +356,26 @@ export default function Goals() {
 
               <select
                 className="w-full p-3 mb-4 bg-white/10 rounded-lg text-white"
-                value={form.category}
+                value={form.type}
                 onChange={(e) =>
                   setForm({
                     ...form,
-                    category:
-                      e.target.value as "short" | "long",
+                    type: e.target.value as
+                      | "short"
+                      | "long",
                   })
                 }
               >
-                <option value="short" className="bg-slate-900">
+                <option
+                  value="short"
+                  className="bg-slate-900"
+                >
                   Short Term
                 </option>
-                <option value="long" className="bg-slate-900">
+                <option
+                  value="long"
+                  className="bg-slate-900"
+                >
                   Long Term
                 </option>
               </select>
@@ -338,20 +388,22 @@ export default function Goals() {
                 onChange={(e) =>
                   setForm({
                     ...form,
-                    targetAmount: e.target.value,
+                    targetAmount:
+                      e.target.value,
                   })
                 }
               />
 
               <input
                 type="number"
-                placeholder="Current Saved"
+                placeholder="Saved Amount"
                 className="w-full p-3 mb-4 bg-white/10 rounded-lg"
-                value={form.currentAmount}
+                value={form.savedAmount}
                 onChange={(e) =>
                   setForm({
                     ...form,
-                    currentAmount: e.target.value,
+                    savedAmount:
+                      e.target.value,
                   })
                 }
               />
@@ -363,12 +415,14 @@ export default function Goals() {
                 onChange={(e) =>
                   setForm({
                     ...form,
-                    targetDate: e.target.value,
+                    targetDate:
+                      e.target.value,
                   })
                 }
               />
 
               <div className="flex justify-between">
+
                 <button
                   onClick={() => {
                     setShowModal(false);
@@ -383,11 +437,15 @@ export default function Goals() {
                   onClick={saveGoal}
                   className="px-5 py-2 bg-indigo-600 rounded-lg"
                 >
-                  {editingGoal ? "Update" : "Add"}
+                  {editingGoal
+                    ? "Update"
+                    : "Add"}
                 </button>
+
               </div>
 
             </div>
+
           </div>
         )}
 

@@ -7,6 +7,8 @@ import YahooFinance from "yahoo-finance2";
 import investmentRoutes from "./investment.js";
 import expenseRoutes from "./expense.js";
 import liabilityRoutes from "./liability.js";
+import goalRoutes from "./goal.js";
+
 
 
 // ================== CONFIG ==================
@@ -74,6 +76,8 @@ app.use("/api/investments", investmentRoutes);
 app.use("/api/expenses", expenseRoutes);
 //Liabilty
 app.use("/api/liabilities", liabilityRoutes);
+//goal
+app.use("/api/goals", goalRoutes);
 
 // ================== START SERVER ==================
 const PORT = 4000;
