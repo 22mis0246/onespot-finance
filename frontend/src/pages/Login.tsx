@@ -24,7 +24,7 @@ export default function Login() {
       // Save JWT token
       localStorage.setItem("token", res.data.token);
 
-      // OPTIONAL: Save user data if backend sends it
+      // not OPTIONAL: Save user data if backend sends it
       if (res.data.user) {
         localStorage.setItem("user", JSON.stringify(res.data.user));
       }
