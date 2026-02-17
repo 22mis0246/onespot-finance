@@ -1,0 +1,64 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          Int          @id @default(autoincrement())
+  email       String       @unique
+  password    String
+  fullName    String
+  createdAt   DateTime     @default(now())
+  expenses    Expense[]
+  investments Investment[]
+  liabilities Liability[]
+
+}
+
+model Investment {
+  id           Int      @id @default(autoincrement())
+  name         String
+  type         String
+  avgPrice     Float?
+  quantity     Float?
+  invested     Float?
+  currentPrice Float
+  userId       Int
+  createdAt    DateTime @default(now())
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Expense {
+  id        Int      @id @default(autoincrement())
+  title     String
+  amount    Float
+  category  String
+  date      DateTime
+  userId    Int
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model Liability {
+  id           Int      @id @default(autoincrement())
+  title        String
+
+  // Instead of enum
+  type         String   // "CREDIT_CARD", "HOME_LOAN", etc.
+
+  totalAmount  Float
+  outstanding  Float
+  interestRate Float
+
+  startDate    DateTime @default(now())
+  dueDate      DateTime?
+
+  userId       Int
+  createdAt    DateTime @default(now())
+
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}

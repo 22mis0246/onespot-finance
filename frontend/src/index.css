@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply min-h-screen bg-gradient-to-br from-indigo-900 via-slate-900 to-emerald-900 text-white;
+}
+
+.glass-card {
+  @apply bg-white/10 backdrop-blur-md border border-white/20 rounded-xl;
+}
+
+.input {
+  @apply w-full p-3 mb-4 rounded-lg bg-white/10 border border-white/20 text-white;
+}
