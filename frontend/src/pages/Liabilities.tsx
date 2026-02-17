@@ -190,7 +190,7 @@ export default function Liabilities() {
 }
 
 /* ========================
-   STYLES (MATCHING YOUR UI)
+   STYLES (MATCHING  YOUR UI)
 ======================== */
 
 const styles: any = {
