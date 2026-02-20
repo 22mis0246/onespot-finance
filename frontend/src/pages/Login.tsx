@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import api from "../services/api";
 
 export default function Login() {
@@ -41,7 +41,15 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-950 via-slate-900 to-emerald-900">
+   <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-indigo-950 via-slate-900 to-emerald-900 px-4">
+
+  {/* Motivational Quote */}
+  <div className="mb-10 max-w-2xl text-center backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl px-8 py-6 shadow-xl">
+    <p className="text-white/80 text-lg md:text-xl font-light tracking-wide italic">
+      “Compounding is the eighth wonder of the world.”
+    </p>
+  </div>
+
 
       <form
         onSubmit={handleSubmit}
@@ -51,8 +59,8 @@ export default function Login() {
           OneSpot Finance
         </h1>
 
-        <p className="text-center text-white/60 mb-8">
-          AI-Powered Wealth Intelligence
+        <p className="text-center text-white/60 text-sm mb-8">
+          Manage your Finance in one place
         </p>
 
         {error && (
@@ -86,6 +94,12 @@ export default function Login() {
         >
           {loading ? "Signing In..." : "Sign In"}
         </button>
+        <p className="text-white/60 text-sm mt-6 text-center">
+  Don't have an account?{" "}
+  <Link to="/register" className="text-indigo-400 hover:underline">
+    Sign Up
+  </Link>
+</p>
       </form>
     </div>
   );
