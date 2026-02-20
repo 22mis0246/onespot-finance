@@ -8,7 +8,7 @@ import investmentRoutes from "./investment.js";
 import expenseRoutes from "./expense.js";
 import liabilityRoutes from "./liability.js";
 import goalRoutes from "./goal.js";
-
+import dashboardRoutes from "./dashboard.js";
 
 
 // ================== CONFIG ==================
@@ -78,6 +78,8 @@ app.use("/api/expenses", expenseRoutes);
 app.use("/api/liabilities", liabilityRoutes);
 //goal
 app.use("/api/goals", goalRoutes);
+//dashboard
+app.use("/api/dashboard", dashboardRoutes);
 
 // ================== START SERVER ==================
 const PORT = 4000;
