@@ -24,15 +24,16 @@ export default function Investments() {
         </Link>
 
         {/* Global Equity */}
-       <Link to="/investments/global-equity">
-  <div className="bg-white/10 backdrop-blur-md p-8 rounded-xl border border-white/20 hover:bg-white/20 transition cursor-pointer">
-    <h2 className="text-xl font-semibold text-green-400 mb-2">
-      Global Equity
-    </h2>
-    <p className="text-white/70">
-      US Stocks, International Funds
-    </p>
-  </div>
+     <Link
+  to="/investments/global-equity"
+  className="bg-white/10 backdrop-blur-md p-8 rounded-xl border border-white/20 hover:scale-105 transition"
+>
+  <h2 className="text-xl font-semibold text-green-400 mb-3">
+    Global Equity
+  </h2>
+  <p className="text-white/70">
+    US Stocks, International Funds
+  </p>
 </Link>
 
 {/* Gold & Silver */}
