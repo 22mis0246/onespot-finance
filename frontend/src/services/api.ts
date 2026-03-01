@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:4000",
+  baseURL: "https://onespot-finance-backend.onrender.com",
   headers: {
     "Content-Type": "application/json",
   },

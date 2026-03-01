@@ -72,7 +72,7 @@ export default function IndianEquity() {
   const fetchLivePrice = async (symbol: string) => {
     try {
       const response = await fetch(
-        `http://localhost:4000/api/stock/${symbol}`
+        `https://onespot-finance-backend.onrender.com/api/stock/${symbol}`
       );
       const data = await response.json();
       return data;
