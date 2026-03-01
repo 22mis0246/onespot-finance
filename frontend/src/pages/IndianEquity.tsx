@@ -100,16 +100,14 @@ export default function IndianEquity() {
     }
 
     let currentPriceNumber = 0;
-    let change;
-    let changePercent;
+    
 
     if (activeTab === "stocks") {
       const live = await fetchLivePrice(form.name.toUpperCase());
       if (!live) return;
 
       currentPriceNumber = live.price;
-      change = live.change;
-      changePercent = live.changePercent;
+      
     } else {
       if (!form.currentPrice) {
         alert("Enter current price");

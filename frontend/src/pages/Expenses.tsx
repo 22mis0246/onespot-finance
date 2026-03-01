@@ -207,7 +207,7 @@ export default function Expenses() {
                   `₹ ${value.toLocaleString("en-IN")}`
                 }
               >
-                {categoryData.map((entry: any, index: number) => (
+                {categoryData.map((_, index: number) => (
                   <Cell key={index} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
