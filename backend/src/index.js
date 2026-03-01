@@ -62,7 +62,7 @@ app.get("/api/stock/:symbol", async (req, res) => {
 
   } catch (error) {
     console.error("Yahoo error:", error.message);
-    res.status(500).jsovdn({
+    res.status(500).json({
       error: "Error fetching stock price",
     });
   }
