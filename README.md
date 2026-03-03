@@ -235,4 +235,4 @@ Unauthorized copying, redistribution, or commercial usage is prohibited without 
 Naveen Raj
 
 Full Stack Developer
-Actively building scalable financial applications.
+Actively building scalable applications.
