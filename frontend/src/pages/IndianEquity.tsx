@@ -39,24 +39,52 @@ export default function IndianEquity() {
     quantity: "",
     currentPrice: "",
   });
+/* =========================================================
+   LOAD INVESTMENTS + REFRESH LIVE PRICES
+========================================================= */
+useEffect(() => {
+  fetchInvestments();
 
-  /* =========================================================
-     LOAD INVESTMENTS FROM BACKEND
-  ========================================================= */
-  useEffect(() => {
+  const interval = setInterval(() => {
     fetchInvestments();
-  }, []);
+  }, 60000); // refresh every 60 seconds
 
-  const fetchInvestments = async () => {
-    try {
-      const res = await api.get("/api/investments");
-      setInvestments(res.data);
-    } catch (err) {
-      console.error("Failed to fetch investments");
-    }
-  };
-  
+  return () => clearInterval(interval);
+}, []);
 
+const fetchInvestments = async () => {
+  try {
+    const res = await api.get("/api/investments");
+
+    const list = res.data;
+
+    // refresh stock prices
+    const updated = await Promise.all(
+      list.map(async (item: Investment) => {
+
+        if (item.type !== "stocks") return item;
+
+        try {
+          const priceRes = await api.get(`/api/stock/${item.name}`);
+
+          return {
+            ...item,
+            currentPrice: priceRes.data.price
+          };
+
+        } catch {
+          return item;
+        }
+
+      })
+    );
+
+    setInvestments(updated);
+
+  } catch (err) {
+    console.error("Failed to fetch investments");
+  }
+};
   /* =========================================================
      FORMAT CURRENCY
   ========================================================= */
@@ -69,19 +97,16 @@ export default function IndianEquity() {
   /* =========================================================
      FETCH LIVE PRICE
   ========================================================= */
-  const fetchLivePrice = async (symbol: string) => {
-    try {
-      const response = await fetch(
-        `https://onespot-finance-backend.onrender.com/api/stock/${symbol}`
-      );
-      const data = await response.json();
-      return data;
-    } catch {
-      alert("Error fetching live price");
-      return null;
-    }
-  };
-
+const fetchLivePrice = async (symbol: string) => {
+  try {
+    const response = await api.get(`/api/stock/${symbol}`);
+    return response.data;
+  } catch (err) {
+    console.error("Price fetch failed", err);
+    alert("Error fetching stock price");
+    return null;
+  }
+};
   /* =========================================================
      FILTER BY TAB
   ========================================================= */

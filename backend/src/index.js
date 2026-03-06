@@ -3,7 +3,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import authRoutes from "./auth.js";
-import YahooFinance from "yahoo-finance2";
+
 import investmentRoutes from "./investment.js";
 import expenseRoutes from "./expense.js";
 import liabilityRoutes from "./liability.js";
@@ -19,7 +19,7 @@ app.use(cors());
 app.use(express.json());
 
 // ================== YAHOO INSTANCE (VERY IMPORTANT FOR v3) ==================
-const yahooFinance = new YahooFinance();
+
 
 // ================== TEST ROUTE ==================
 app.get("/", (req, res) => {
@@ -34,40 +34,38 @@ app.get("/", (req, res) => {
 */
 app.get("/api/stock/:symbol", async (req, res) => {
   try {
-    // Convert to uppercase
-    const userSymbol = req.params.symbol.toUpperCase();
+    const symbol = req.params.symbol.toUpperCase() + ".NS";
 
-    // Always NSE
-    const yahooSymbol = `${userSymbol}.NS`;
+    const response = await fetch(
+      `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}`,
+      {
+        headers: {
+          "User-Agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36"
+        }
+      }
+    );
 
-    console.log("Fetching price for:", yahooSymbol);
+    const data = await response.json();
 
-    // Fetch live quote
-    const quote = await yahooFinance.quote(yahooSymbol);
+    const result = data.chart.result;
 
-    // If invalid stock
-    if (!quote || !quote.regularMarketPrice) {
-      return res.status(404).json({
-        error: "Invalid stock symbol",
-      });
+    if (!result || result.length === 0) {
+      return res.status(404).json({ error: "Stock not found" });
     }
 
-    // Send clean response
+    const price = result[0].meta.regularMarketPrice;
+
     res.json({
-      symbol: yahooSymbol,
-      price: quote.regularMarketPrice,
-      change: quote.regularMarketChange,
-      changePercent: quote.regularMarketChangePercent,
+      symbol,
+      price
     });
 
-  } catch (error) {
-    console.error("Yahoo error:", error.message);
-    res.status(500).json({
-      error: "Error fetching stock price",
-    });
+  } catch (err) {
+    console.error("Yahoo error:", err);
+    res.status(500).json({ error: "Failed to fetch stock price" });
   }
 });
-
 // ================== AUTH ROUTES ==================
 app.use("/api/auth", authRoutes);
 //Investment routes
