@@ -32,6 +32,7 @@ export default function GoldSilver() {
   const [sgb, setSgb] = useState<SGBHolding[]>([]);
 
   const [form, setForm] = useState<any>({});
+  const [editingId, setEditingId] = useState<number | null>(null);
 
   //to show
   useEffect(() => {
@@ -113,26 +114,33 @@ const addHolding = async () => {
       };
     }
 
-    await api.post("/api/investments", payload);
+    if (editingId) {
+      await api.put(`/api/investments/${editingId}`, payload);
+    } else {
+      await api.post("/api/investments", payload);
+    }
 
     setShowModal(false);
     setForm({});
+    setEditingId(null);
 
   } catch (err) {
     console.error(err);
   }
 };
 
-  const deleteHolding = (index: number) => {
-    if (activeTab === "physical") {
-      setPhysical(physical.filter((_, i) => i !== index));
-    } else if (activeTab === "etf") {
-      setEtf(etf.filter((_, i) => i !== index));
-    } else {
-      setSgb(sgb.filter((_, i) => i !== index));
-    }
-  };
+  const deleteHolding = async (id: number) => {
+  try {
+    await api.delete(`/api/investments/${id}`);
 
+    setPhysical(prev => prev.filter((_: any, i: number) => i !== id));
+    setEtf(prev => prev.filter((_: any, i: number) => i !== id));
+    setSgb(prev => prev.filter((_: any, i: number) => i !== id));
+
+  } catch (err) {
+    console.error(err);
+  }
+};
   const calculateTotals = () => {
     if (activeTab === "physical") {
       const invested = physical.reduce(
@@ -227,24 +235,73 @@ const addHolding = async () => {
         </button>
 
         {/* Holdings List */}
-        <div className="grid gap-4">
-          {holdings.map((h: any, index: number) => (
-            <div key={index} className="glass-card p-5 flex justify-between">
-              <div>
-                <h3 className="text-lg font-semibold">
-                  {h.name || h.metal}
-                </h3>
-              </div>
-              <button
-                onClick={() => deleteHolding(index)}
-                className="text-red-400 hover:text-red-600"
-              >
-                Delete
-              </button>
-            </div>
-          ))}
+     {/* Holdings List */}
+<div className="grid gap-4">
+  {holdings.map((h: any, index: number) => {
+
+    const avg = h.buyPrice || h.avgPrice || 0;
+    const qty = h.quantity || 1;
+    const current = h.currentPrice || h.currentValue || 0;
+
+    const value = qty * current;
+    const invested = qty * avg;
+    const pnl = value - invested;
+
+    return (
+      <div key={index} className="glass-card p-6 flex justify-between items-center">
+
+        {/* LEFT SIDE */}
+        <div>
+          <h3 className="text-lg font-semibold">
+            {h.name || h.metal}
+          </h3>
+
+          <p className="text-white/70 text-sm">
+            Avg ₹{avg} | Qty {qty}
+          </p>
+
+          <p className="text-indigo-400 text-sm">
+            Live ₹{current}
+          </p>
         </div>
 
+        {/* RIGHT SIDE */}
+        <div className="text-right">
+
+          <p className="text-white">
+            Value: ₹{value.toFixed(2)}
+          </p>
+
+          <p className={`${pnl >= 0 ? "text-green-400" : "text-red-400"}`}>
+            ₹{pnl.toFixed(2)}
+          </p>
+
+          <div className="flex gap-3 justify-end text-sm mt-1">
+           <button
+  onClick={() => {
+    setForm(h);
+    setEditingId(h.id);
+    setShowModal(true);
+  }}
+  className="text-yellow-400 hover:text-yellow-300"
+>
+  Edit
+</button>
+
+            <button
+              onClick={() => deleteHolding(index)}
+              className="text-red-400 hover:text-red-300"
+            >
+              Delete
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+    );
+  })}
+</div>
         {/* Modal */}
         {showModal && (
           <div className="fixed inset-0 bg-black/60 flex items-center justify-center">
