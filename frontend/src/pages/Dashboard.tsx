@@ -144,7 +144,7 @@ export default function Dashboard() {
                 paddingAngle={5}
               >
 
-                {chartData.map((entry, index) => (
+                {chartData.map((_, index) => (
 
                   <Cell
                     key={index}
