@@ -148,13 +148,34 @@ export default function GlobalEquity() {
       EDIT OR CREATE
       */
 
-      if (editingId) {
-        await api.put(`/api/investments/${editingId}`, payload);
-      } else {
-        await api.post("/api/investments", payload);
-      }
+      let res;
 
-      setShowModal(false);
+if (editingId) {
+  res = await api.put(`/api/investments/${editingId}`, payload);
+} else {
+  res = await api.post("/api/investments", payload);
+}
+
+const newItem = res.data;
+
+if (activeTab === "stocks") {
+  setStocks(prev => [...prev, newItem]);
+}
+
+if (activeTab === "mutual") {
+  setMutualFunds(prev => [...prev, {
+    id: newItem.id,
+    name: newItem.name,
+    invested: newItem.avgPrice,
+    current: newItem.currentPrice
+  }]);
+}
+
+if (activeTab === "etf") {
+  setEtfs(prev => [...prev, newItem]);
+}
+
+setShowModal(false);
 setForm({});
 setEditingId(null);
 
