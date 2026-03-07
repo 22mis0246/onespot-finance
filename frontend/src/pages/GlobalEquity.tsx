@@ -154,7 +154,9 @@ export default function GlobalEquity() {
         await api.post("/api/investments", payload);
       }
 
-      window.location.reload();
+      setShowModal(false);
+setForm({});
+setEditingId(null);
 
     } catch (err) {
       console.error(err);
