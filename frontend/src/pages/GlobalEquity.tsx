@@ -388,7 +388,8 @@ export default function GlobalEquity() {
           })}
 
         </div>
-        {/* ADD HOLDING MODAL */}
+  {/* ADD HOLDING MODAL */}
+
 {showModal && (
   <div className="fixed inset-0 bg-black/60 flex items-center justify-center">
     <div className="bg-slate-900 p-8 rounded-2xl w-[400px] border border-white/20">
@@ -397,6 +398,8 @@ export default function GlobalEquity() {
         Add Holding
       </h2>
 
+      {/* NAME */}
+
       <input
         type="text"
         placeholder="Name"
@@ -404,26 +407,53 @@ export default function GlobalEquity() {
         onChange={(e)=>setForm({...form,name:e.target.value})}
       />
 
-      <input
-        type="number"
-        placeholder="Average Price"
-        className="w-full p-3 rounded-lg bg-white/10 border border-white/20 mb-4"
-        onChange={(e)=>setForm({...form,avgPrice:e.target.value})}
-      />
+      {/* MUTUAL FUND INPUTS */}
 
-      <input
-        type="number"
-        placeholder="Quantity"
-        className="w-full p-3 rounded-lg bg-white/10 border border-white/20 mb-4"
-        onChange={(e)=>setForm({...form,quantity:e.target.value})}
-      />
+      {activeTab === "mutual" ? (
+        <>
+          <input
+            type="number"
+            placeholder="Invested Amount ($)"
+            className="w-full p-3 rounded-lg bg-white/10 border border-white/20 mb-4"
+            onChange={(e)=>setForm({...form,invested:e.target.value})}
+          />
 
-      <input
-        type="number"
-        placeholder="Current Price"
-        className="w-full p-3 rounded-lg bg-white/10 border border-white/20 mb-4"
-        onChange={(e)=>setForm({...form,currentPrice:e.target.value})}
-      />
+          <input
+            type="number"
+            placeholder="Current Amount ($)"
+            className="w-full p-3 rounded-lg bg-white/10 border border-white/20 mb-4"
+            onChange={(e)=>setForm({...form,current:e.target.value})}
+          />
+        </>
+      ) : (
+
+        /* STOCK + ETF INPUTS */
+
+        <>
+          <input
+            type="number"
+            placeholder="Average Price ($)"
+            className="w-full p-3 rounded-lg bg-white/10 border border-white/20 mb-4"
+            onChange={(e)=>setForm({...form,avgPrice:e.target.value})}
+          />
+
+          <input
+            type="number"
+            placeholder="Quantity"
+            className="w-full p-3 rounded-lg bg-white/10 border border-white/20 mb-4"
+            onChange={(e)=>setForm({...form,quantity:e.target.value})}
+          />
+
+          <input
+            type="number"
+            placeholder="Current Price ($)"
+            className="w-full p-3 rounded-lg bg-white/10 border border-white/20 mb-4"
+            onChange={(e)=>setForm({...form,currentPrice:e.target.value})}
+          />
+        </>
+      )}
+
+      {/* BUTTONS */}
 
       <div className="flex justify-between">
 
