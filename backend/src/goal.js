@@ -9,7 +9,7 @@ const router = express.Router();
 ========================= */
 router.post("/", authenticateToken, async (req, res) => {
   try {
-    const { title, type, targetAmount, targetDate } = req.body;
+    const { title, type, targetAmount,savedAmount, targetDate } = req.body;
 
     if (!title || !type || !targetAmount) {
       return res.status(400).json({ message: "All fields required" });
@@ -20,6 +20,7 @@ router.post("/", authenticateToken, async (req, res) => {
         title,
         type,
         targetAmount: Number(targetAmount),
+        savedAmount: Number(savedAmount || 0),   // ✅ ADD THIS
         targetDate: targetDate ? new Date(targetDate) : null,
         userId: req.user.id,
       },
