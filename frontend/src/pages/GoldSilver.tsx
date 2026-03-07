@@ -133,9 +133,9 @@ const addHolding = async () => {
   try {
     await api.delete(`/api/investments/${id}`);
 
-    setPhysical(prev => prev.filter((_: any, i: number) => i !== id));
-    setEtf(prev => prev.filter((_: any, i: number) => i !== id));
-    setSgb(prev => prev.filter((_: any, i: number) => i !== id));
+    setPhysical(prev => prev.filter((h: any) => h.id !== id));
+    setEtf(prev => prev.filter((h: any) => h.id !== id));
+    setSgb(prev => prev.filter((h: any) => h.id !== id));
 
   } catch (err) {
     console.error(err);
@@ -289,7 +289,7 @@ const addHolding = async () => {
 </button>
 
             <button
-              onClick={() => deleteHolding(index)}
+              onClick={() => deleteHolding(h.id)}
               className="text-red-400 hover:text-red-300"
             >
               Delete
