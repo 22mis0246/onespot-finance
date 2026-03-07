@@ -1,6 +1,7 @@
 import { useState } from "react";
 import DashboardLayout from "../layouts/DashboardLayout";
 import api from "../services/api";
+import { useEffect } from "react";
 
 type PhysicalHolding = {
   metal: "Gold" | "Silver";
@@ -31,6 +32,50 @@ export default function GoldSilver() {
   const [sgb, setSgb] = useState<SGBHolding[]>([]);
 
   const [form, setForm] = useState<any>({});
+
+  //to show
+  useEffect(() => {
+  const fetchInvestments = async () => {
+    try {
+      const res = await api.get("/api/investments");
+
+      const physicalData = res.data
+        .filter((inv: any) => inv.type === "gold" || inv.type === "silver")
+        .map((inv: any) => ({
+          metal: inv.name,
+          quantity: inv.quantity,
+          buyPrice: inv.avgPrice,
+          currentPrice: inv.currentPrice,
+        }));
+
+      const etfData = res.data
+        .filter((inv: any) => inv.type === "gold_etf")
+        .map((inv: any) => ({
+          name: inv.name,
+          quantity: inv.quantity,
+          avgPrice: inv.avgPrice,
+          currentPrice: inv.currentPrice,
+        }));
+
+      const sgbData = res.data
+        .filter((inv: any) => inv.type === "sgb")
+        .map((inv: any) => ({
+          name: inv.name,
+          investedAmount: inv.avgPrice,
+          currentValue: inv.currentPrice,
+        }));
+
+      setPhysical(physicalData);
+      setEtf(etfData);
+      setSgb(sgbData);
+
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  fetchInvestments();
+}, []);
 
 
 const addHolding = async () => {
