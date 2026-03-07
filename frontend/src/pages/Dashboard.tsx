@@ -50,7 +50,7 @@ export default function Dashboard() {
       <div className="bg-indigo-500/10 border border-indigo-400/20 p-6 rounded-xl">
         <h2 className="font-semibold mb-2">AI Wealth Insight</h2>
         <p className="text-white/70">
-          Your portfolio is 60% equity-heavy. Consider diversifying into bonds for better downside protection.
+          Your portfolio is 60% equity-heavy. Consider diversifying into bonds for better downside protection.(Sample - Planning to Implement)
         </p>
       </div>
 

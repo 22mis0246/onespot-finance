@@ -43,6 +43,7 @@ export default function GoldSilver() {
       const physicalData = res.data
         .filter((inv: any) => inv.type === "gold" || inv.type === "silver")
         .map((inv: any) => ({
+          id: inv.id,
           metal: inv.name,
           quantity: inv.quantity,
           buyPrice: inv.avgPrice,
@@ -52,6 +53,7 @@ export default function GoldSilver() {
       const etfData = res.data
         .filter((inv: any) => inv.type === "gold_etf")
         .map((inv: any) => ({
+          id: inv.id,
           name: inv.name,
           quantity: inv.quantity,
           avgPrice: inv.avgPrice,
@@ -61,6 +63,7 @@ export default function GoldSilver() {
       const sgbData = res.data
         .filter((inv: any) => inv.type === "sgb")
         .map((inv: any) => ({
+          id: inv.id,
           name: inv.name,
           investedAmount: inv.avgPrice,
           currentValue: inv.currentPrice,
