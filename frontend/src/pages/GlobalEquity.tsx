@@ -388,6 +388,64 @@ export default function GlobalEquity() {
           })}
 
         </div>
+        {/* ADD HOLDING MODAL */}
+{showModal && (
+  <div className="fixed inset-0 bg-black/60 flex items-center justify-center">
+    <div className="bg-slate-900 p-8 rounded-2xl w-[400px] border border-white/20">
+
+      <h2 className="text-xl font-bold mb-6">
+        Add Holding
+      </h2>
+
+      <input
+        type="text"
+        placeholder="Name"
+        className="w-full p-3 rounded-lg bg-white/10 border border-white/20 mb-4"
+        onChange={(e)=>setForm({...form,name:e.target.value})}
+      />
+
+      <input
+        type="number"
+        placeholder="Average Price"
+        className="w-full p-3 rounded-lg bg-white/10 border border-white/20 mb-4"
+        onChange={(e)=>setForm({...form,avgPrice:e.target.value})}
+      />
+
+      <input
+        type="number"
+        placeholder="Quantity"
+        className="w-full p-3 rounded-lg bg-white/10 border border-white/20 mb-4"
+        onChange={(e)=>setForm({...form,quantity:e.target.value})}
+      />
+
+      <input
+        type="number"
+        placeholder="Current Price"
+        className="w-full p-3 rounded-lg bg-white/10 border border-white/20 mb-4"
+        onChange={(e)=>setForm({...form,currentPrice:e.target.value})}
+      />
+
+      <div className="flex justify-between">
+
+        <button
+          onClick={()=>setShowModal(false)}
+          className="px-5 py-2 bg-gray-600 rounded-lg"
+        >
+          Cancel
+        </button>
+
+        <button
+          onClick={addHolding}
+          className="px-5 py-2 bg-indigo-600 rounded-lg"
+        >
+          Add
+        </button>
+
+      </div>
+
+    </div>
+  </div>
+)}
 
       </div>
 
