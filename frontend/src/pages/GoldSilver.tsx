@@ -1,5 +1,6 @@
 import { useState } from "react";
 import DashboardLayout from "../layouts/DashboardLayout";
+import api from "../services/api";
 
 type PhysicalHolding = {
   metal: "Gold" | "Silver";
@@ -31,18 +32,51 @@ export default function GoldSilver() {
 
   const [form, setForm] = useState<any>({});
 
-  const addHolding = () => {
+
+const addHolding = async () => {
+  try {
+
+    let payload: any = {};
+
     if (activeTab === "physical") {
-      setPhysical([...physical, form]);
-    } else if (activeTab === "etf") {
-      setEtf([...etf, form]);
-    } else {
-      setSgb([...sgb, form]);
+      payload = {
+        name: form.metal,
+        type: form.metal.toLowerCase(),
+        quantity: form.quantity,
+        avgPrice: form.buyPrice,
+        currentPrice: form.currentPrice,
+      };
     }
 
-    setForm({});
+    if (activeTab === "etf") {
+      payload = {
+        name: form.name,
+        type: "gold_etf",
+        quantity: form.quantity,
+        avgPrice: form.avgPrice,
+        currentPrice: form.currentPrice,
+      };
+    }
+
+    if (activeTab === "sgb") {
+      payload = {
+        name: form.name,
+        type: "sgb",
+        avgPrice: form.investedAmount,
+        quantity: 1,
+        currentPrice: form.currentValue,
+      };
+    }
+
+    await api.post("/api/investments", payload);
+
     setShowModal(false);
-  };
+    setForm({});
+
+  } catch (err) {
+    console.error(err);
+  }
+};
 
   const deleteHolding = (index: number) => {
     if (activeTab === "physical") {
