@@ -97,20 +97,6 @@ Add Indian equity stocks manually
 
 Track invested value
 
-⚠️ Current Limitation:
-
-Live stock price fetching is not fully implemented.
-
-Real-time stock API integration is pending.
-
-Portfolio value does not auto-update based on market price yet.
-
-Future plan:
-
-Integrate stock market API
-
-Fetch live NSE/BSE stock prices
-
 Auto-calculate portfolio value
 
 🪙 7. Crypto Tracking (Planned Feature)
