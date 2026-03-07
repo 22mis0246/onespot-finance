@@ -118,9 +118,9 @@ export default function GlobalEquity() {
         payload = {
           name: form.name,
           type: "global_stock",
-          avgPrice: Number(form.avgPrice),
+          avgPrice: Number(form.avgPrice)*90,
           quantity: Number(form.quantity),
-          currentPrice: Number(form.currentPrice)
+          currentPrice: Number(form.currentPrice)*90
         };
       }
 
@@ -128,9 +128,9 @@ export default function GlobalEquity() {
         payload = {
           name: form.name,
           type: "global_mutual",
-          avgPrice: Number(form.invested),
+          avgPrice: Number(form.invested)*90,
           quantity: 1,
-          currentPrice: Number(form.current)
+          currentPrice: Number(form.current)*90
         };
       }
 
@@ -138,9 +138,9 @@ export default function GlobalEquity() {
         payload = {
           name: form.name,
           type: "global_etf",
-          avgPrice: Number(form.avgPrice),
+          avgPrice: Number(form.avgPrice)*90,
           quantity: Number(form.quantity),
-          currentPrice: Number(form.currentPrice)
+          currentPrice: Number(form.currentPrice)*90
         };
       }
 
@@ -295,18 +295,18 @@ setEditingId(null);
 
           <div className="glass-card p-6">
             <p className="text-sm text-white/60">Total Invested</p>
-            <h2 className="text-2xl font-bold">$ {totalInvested}</h2>
+            <h2 className="text-2xl font-bold">₹  {totalInvested}</h2>
           </div>
 
           <div className="glass-card p-6">
             <p className="text-sm text-white/60">Current Value</p>
-            <h2 className="text-2xl font-bold">$ {totalCurrent}</h2>
+            <h2 className="text-2xl font-bold">₹  {totalCurrent}</h2>
           </div>
 
           <div className="glass-card p-6">
             <p className="text-sm text-white/60">Gain / Loss</p>
             <h2 className={`text-2xl font-bold ${pnl >= 0 ? "text-green-400":"text-red-400"}`}>
-              $ {pnl}
+              ₹ {pnl}
             </h2>
           </div>
 
@@ -363,7 +363,7 @@ setEditingId(null);
                   ) : (
 
                     <p className="text-white/70 text-sm">
-                      Avg $ {h.avgPrice} | Qty {h.quantity}
+                      Avg ₹ {h.avgPrice} | Qty {h.quantity}
                     </p>
 
                   )}
@@ -374,10 +374,10 @@ setEditingId(null);
 
                 <div className="text-right">
 
-                  <p>Value: $ {current}</p>
+                  <p>Value: ₹ {current}</p>
 
                   <p className={gain>=0?"text-green-400":"text-red-400"}>
-                    {gain>=0?"+":""}$ {gain}
+                    {gain>=0?"+":""}₹ {gain}
                   </p>
 
                   <div className="flex gap-3 justify-end text-sm mt-1">
