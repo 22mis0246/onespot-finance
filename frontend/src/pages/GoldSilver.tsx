@@ -40,8 +40,8 @@ const addHolding = async () => {
 
     if (activeTab === "physical") {
       payload = {
-        name: form.metal,
-        type: form.metal.toLowerCase(),
+        name: form.metal || "Gold",
+        type: (form.metal || "Gold").toLowerCase(),
         quantity: form.quantity,
         avgPrice: form.buyPrice,
         currentPrice: form.currentPrice,
