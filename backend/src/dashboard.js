@@ -25,10 +25,12 @@ router.get("/dashboard", protect, async (req, res) => {
       const value = (inv.quantity ?? 0) * (inv.currentPrice ?? 0);
       netWorth += value;
 
-      if (inv.type === "equity") equity += value;
-      if (inv.type === "gold") gold += value;
-      if (inv.type === "debt") debt += value;
-      if (inv.type === "crypto") crypto += value;
+      const type = (inv.type || "").toLowerCase();
+
+if (type === "equity") equity += value;
+if (type === "gold") gold += value;
+if (type === "debt") debt += value;
+if (type === "crypto") crypto += value;
 
     });
 
