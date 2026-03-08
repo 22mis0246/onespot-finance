@@ -77,7 +77,7 @@ app.use("/api/liabilities", liabilityRoutes);
 //goal
 app.use("/api/goals", goalRoutes);
 //dashboard
-app.use("/api/dashboard", dashboardRoutes);
+app.use("/api", dashboardRoutes);
 
 // ================== START SERVER ==================
 const PORT = process.env.PORT || 4000;
