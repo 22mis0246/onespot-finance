@@ -28,7 +28,7 @@ export default function Dashboard() {
     const fetchDashboard = async () => {
       try {
 
-        const res = await api.get("/dashboard");
+        const res = await api.get("/api/dashboard");
 
         setNetWorth(res.data.netWorth);
         setRiskLevel(res.data.riskLevel);
