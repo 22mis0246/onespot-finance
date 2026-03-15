@@ -1,6 +1,7 @@
 OneSpot Finance
 
 A Unified Personal Finance & Investment Management Platform
+![OneSpot Finance Poster](./poster.png)
 
 📌 Project Overview
 
