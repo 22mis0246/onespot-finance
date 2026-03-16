@@ -5,17 +5,21 @@
   text-align: center;
 }
 
+/* Logo */
+
 .logo {
   height: 6em;
   padding: 1.5em;
   will-change: filter;
   transition: filter 300ms;
 }
+
 .logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+  filter: drop-shadow(0 0 2em #facc15);
 }
+
 .logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+  filter: drop-shadow(0 0 2em #facc15);
 }
 
 @keyframes logo-spin {
@@ -27,19 +31,18 @@
   }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
+/* Cards */
 
 .card {
   padding: 2em;
 }
 
 .read-the-docs {
-  color: #888;
+  color: #999;
 }
+
+/* Header */
+
 .page-header {
   display: flex;
   justify-content: space-between;
@@ -47,13 +50,20 @@
   margin-bottom: 30px;
 }
 
+/* Buttons */
+
 .primary-btn {
-  background: #6366f1;
+  background: #facc15;
   border: none;
   padding: 10px 18px;
   border-radius: 8px;
-  color: white;
+  color: black;
   cursor: pointer;
+  font-weight: 600;
+}
+
+.primary-btn:hover {
+  background: #fde047;
 }
 
 .danger-btn {
@@ -66,22 +76,31 @@
   margin-top: 10px;
 }
 
+/* Cards grid */
+
 .card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 20px;
 }
 
+/* Finance cards */
+
 .finance-card {
-  background: #1f2937;
+  background: #111111;
+  border: 1px solid #facc15;
   padding: 20px;
   border-radius: 12px;
 }
+
+/* Sub text */
 
 .sub {
   opacity: 0.7;
   margin-bottom: 15px;
 }
+
+/* Amount rows */
 
 .amount-row {
   display: flex;
@@ -89,17 +108,22 @@
   margin-bottom: 8px;
 }
 
+/* Modal */
+
 .modal {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.8);
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
+/* Modal box */
+
 .modal-content {
-  background: #111827;
+  background: #000000;
+  border: 1px solid #facc15;
   padding: 30px;
   border-radius: 12px;
   width: 350px;
@@ -108,16 +132,21 @@
   gap: 12px;
 }
 
+/* Modal inputs */
+
 .modal-content input,
 .modal-content select {
   padding: 8px;
   border-radius: 6px;
-  border: none;
+  border: 1px solid #facc15;
+  background: black;
+  color: #facc15;
 }
+
+/* Modal buttons */
 
 .modal-actions {
   display: flex;
   justify-content: space-between;
   margin-top: 10px;
 }
-
