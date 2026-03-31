@@ -196,17 +196,9 @@ This project is still in development.
 
 Pending Improvements:
 
-Live Indian equity price integration
-
 Crypto asset tracking
 
 Market news feed integration
-
-Portfolio analytics visualization
-
-Performance graphs
-
-Better UI enhancements
 
 Complete error handling
 
