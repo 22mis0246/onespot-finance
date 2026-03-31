@@ -1,4 +1,4 @@
-OneSpot Finance
+OneSpot Finance (Render free DB service expired so users cannot login currently will rectify soon).
 
 A Unified Personal Finance & Investment Management Platform. To view Site check Releases on your right!!!
 ![OneSpot Finance Poster](./poster.png)
