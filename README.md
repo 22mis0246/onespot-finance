@@ -3,6 +3,7 @@ OneSpot Finance (Render free DB service expired so users cannot login currently 
 A Unified Personal Finance & Investment Management Platform. To view Site check Releases on your right!!!
 <img width="1919" height="996" alt="image" src="https://github.com/user-attachments/assets/935ba5ab-63a8-43ba-be02-5a2d2174453e" />
 
+
 <img width="1367" height="878" alt="image" src="https://github.com/user-attachments/assets/01afc57c-fd1f-4cde-9b9b-2e6eded2c888" />
 
 📌 Project Overview
