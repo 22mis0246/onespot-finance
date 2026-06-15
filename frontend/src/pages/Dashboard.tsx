@@ -171,7 +171,7 @@ export default function Dashboard() {
       <div className="bg-indigo-500/10 border border-indigo-400/20 p-6 rounded-xl">
 
         <h2 className="font-semibold mb-2">
-          AI Wealth Insight
+          Wealth Insight
         </h2>
 
         <p className="text-white/70">
@@ -183,7 +183,11 @@ export default function Dashboard() {
 
           risk profile. Consider balancing equity
           and defensive assets like gold or bonds
-          to maintain long-term stability.
+          to maintain long-term stability.(Sample Data)
+
+          <p>
+  AI-driven analytics and personalized financial insights will be introduced in a future release.
+</p>
 
         </p>
 

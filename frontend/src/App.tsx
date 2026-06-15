@@ -10,6 +10,7 @@ import GoldSilver from "./pages/GoldSilver";
 import Expenses from "./pages/Expenses";
 import Liabilities from "./pages/Liabilities";
 import Goals from "./pages/Goals";
+import Crypto from "./pages/Crypto";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
          <Route path="/expenses" element={<Expenses />} /> 
          <Route path="/liabilities" element={<Liabilities />} />
          <Route path="/goals" element={<Goals />} />
+         <Route path="/investments/crypto" element={<Crypto />} />
 
       </Routes>
     </BrowserRouter>
